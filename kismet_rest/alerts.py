@@ -37,7 +37,7 @@ class Alerts(BaseInterface):
             yield result
 
     def define(self, name, description, rate="10/min", burst="1/sec",
-               phyname=None):
+               phyname=None, alert_class="OTHER", severity=10):
         """Define an alert.
 
         LOGIN REQUIRED
@@ -55,6 +55,8 @@ class Alerts(BaseInterface):
             rate (str): Rate limit. Defaults to ``10/min``.
             burst (str): Burst limit. Defaults to ``1/sec``.
             phyname (str): Name of PHY. Defaults to None.
+            alert_class (str): Category of alert. Defaults to OTHER
+            severity (int): alert severity level, defaults to 10
 
         Return:
             bool: True for success, False for failed request.
@@ -62,7 +64,9 @@ class Alerts(BaseInterface):
         cmd = {"name": name,
                "description": description,
                "throttle": rate,
-               "burst": burst}
+               "burst": burst,
+               "class": alert_class,
+               "severity":severity}
         if phyname is not None:
             cmd["phyname"] = phyname
         url = "alerts/definitions/define_alert.cmd"
@@ -100,5 +104,5 @@ class Alerts(BaseInterface):
             cmd["other"] = other
         if channel is not None:
             cmd["channel"] = channel
-        return self.interact("POST", "alerts/raise_alert.cmd", payload=cmd,
+        return self.interact("POST", "alerts/raise_alerts.cmd", payload=cmd,
                              only_status=True)
